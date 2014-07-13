@@ -1,7 +1,7 @@
 /* 
  * AngularJS directives for double horizontal and double vertical scroll bar
  * Author: przno
- * Version: 0.1.0
+ * Version: 0.1.1
  * License: MIT
  */
 
@@ -10,79 +10,113 @@
 
 	angular.module('doubleScrollBars', [])
 
-	.directive('doubleScrollBarHorizontal', ['$timeout',
-		function($timeout) {
+.directive('doubleScrollBarHorizontal', ['$timeout', 'scrollStorage',
+    function($timeout, scrollStorage) {
 
-			return {
+        return {
 
-				// usage: <double-scroll-bar-horizontal> {{content}} or static content </double-scroll-bar-horizontal>
-				// or with input value: <div data-double-scroll-bar-horizontal="always"> {{content}} or static content </div>
-				restrict: 'A',
+            // usage:
+            // <div data-double-scroll-bar-horizontal> {{content}} or static content </div>
+            // or with input value:
+            // <div data-double-scroll-bar-horizontal="always"> {{content}} or static content </div>
+            restrict: 'A',
 
-				// transclude the content
-				transclude: true,
+            // transclude the content
+            transclude: true,
 
-				// isolate scope
-				scope: {
-					doubleScrollBarHorizontal: '@' // if equals 'always' will display the scroll bars even if there is nothing to scroll; otherwise show them only when content overflows display area
-				},
+            // isolate scope
+            scope: {
+                doubleScrollBarHorizontal: '@', // if equals 'always' will display inactive scroll bars even if there is nothing to scroll; otherwise show them only when content overflows display area
+                id: '@' // optional id
+            },
 
-				// HTML template
-				// 20px is the standard height of horizontal scroll bar on most systems, TODO calculate this value automatically, TODO do not consume height if bar not displayed
-				template: '' +
-					'<div>' +
-					' <div style="overflow-y: hidden; height: 20px;" data-ng-style="{\'overflow-x\': doubleScrollBarHorizontal == \'always\' ? \'scroll\' : \'auto\'}">' +
-					'   <div style="height: 20px;" data-ng-style="{width: wrapper2scrollWidth}"></div>' +
-					' </div>' +
-					' <div data-ng-style="{\'overflow-x\': doubleScrollBarHorizontal == \'always\' ? \'scroll\' : \'auto\'}">' +
-					'   <div data-ng-transclude></div>' +
-					' </div>' +
-					'</div>',
+            // HTML template
+            // 20px is the standard height of horizontal scroll bar on most systems, TODO calculate this value automatically, TODO do not consume height if bar not displayed
+            template: '' +
+                '<div>' +
+                ' <div style="overflow-y: hidden; height: 20px;" data-ng-style="{\'overflow-x\': doubleScrollBarHorizontal == \'always\' ? \'scroll\' : \'auto\'}">' +
+                '   <div style="height: 20px;" data-ng-style="{width: wrapper2scrollWidth}"></div>' +
+                ' </div>' +
+                ' <div data-ng-style="{\'overflow-x\': doubleScrollBarHorizontal == \'always\' ? \'scroll\' : \'auto\'}">' +
+                '   <div data-ng-transclude></div>' +
+                ' </div>' +
+                '</div>',
 
-				// link function with the logic
-				link: function($scope, iElm, iAttrs, controller) {
+            // link function with the logic
+            link: function($scope, iElm, iAttrs, controller) {
 
-					// scroll width of the wrapper2 div, width of div inside wrapper1 will be set to the same value
-					$scope.wrapper2scrollWidth = '0px';
+                // scroll width of the wrapper2 div, width of div inside wrapper1 will be set to the same value
+                $scope.wrapper2scrollWidth = '0px';
 
-					// angular.element representation od the root <div> of this directive
-					var rootDiv = iElm.children().eq(0);
+                // angular.element representation od the root <div> of this directive
+                var rootDiv = iElm.children().eq(0);
 
-					// angular.element object for the first div in the root // <div style="overflow-x: auto; overflow-y: hidden; height: 20px;">
-					// the 'virtual' scroll bar will be here
-					var wrapper1 = rootDiv.children().eq(0);
+                // angular.element object for the first div in the root // <div style="overflow-x: auto; overflow-y: hidden; height: 20px;">
+                // the 'virtual' top scroll bar will be here
+                var wrapper1 = rootDiv.children().eq(0);
 
-					// angular.element object for the first div in the root // <div style="overflow-x: auto;">
-					// the 'real' scroll bar will be here
-					var wrapper2 = rootDiv.children().eq(1);
+                // angular.element object for the first div in the root // <div style="overflow-x: auto;">
+                // the 'real' bottom scroll bar will be here
+                var wrapper2 = rootDiv.children().eq(1);
 
-					// get native DOM element from angular.element
-					var wrapper1dom = wrapper1[0];
-					var wrapper2dom = wrapper2[0];
+                // get native DOM element from angular.element
+                var wrapper1dom = wrapper1[0];
+                var wrapper2dom = wrapper2[0];
 
-					// if scrolling one ruler, scroll also the other one
-					wrapper1.on('scroll', function() {
-						wrapper2dom.scrollLeft = wrapper1dom.scrollLeft;
-					});
+                // if scrolling one ruler, scroll also the other one
+                wrapper1.on('scroll', function() {
+                    wrapper2dom.scrollLeft = wrapper1dom.scrollLeft;
+                });
 
-					wrapper2.on('scroll', function() {
-						wrapper1dom.scrollLeft = wrapper2dom.scrollLeft;
-					});
+                wrapper2.on('scroll', function() {
+                    wrapper1dom.scrollLeft = wrapper2dom.scrollLeft;
+                });
 
-					// watch for a change of the width (e.g. transcluded content changed and so changed its width)
-					$scope.$watch(function() {
-						return ($scope.wrapper2scrollWidth = wrapper2dom.scrollWidth + 'px');
-					}, function(newValue, oldValue) {
-						// run $apply one more time so the scroll bars are in sync
-						// $timeout to run it on next $digest cycle, otherwise angular will complain of '$digest already in process'
-						$timeout(function() {
-							$scope.$apply();
-						});
-					});
+                var firstTime = true;
 
-				}
-			};
-		}
-	]);
+                // watch for a change of the width (e.g. transcluded content changed and so changed its width)
+                $scope.$watch(function() {
+                    return ($scope.wrapper2scrollWidth = wrapper2dom.scrollWidth + 'px');
+                }, function(newValue, oldValue) {
+                    // run $apply one more time so the scroll bars are in sync
+                    // $timeout to run it on next $digest cycle, otherwise angular will complain of '$digest already in process'
+                    $timeout(function() {
+                        $scope.$apply();
+
+                        // first time after recompiled and width set (width set in $apply())
+                        if (firstTime) {
+                            // initial values for scroll position - zero if this directive is compiled very first time or if no id provided, otherwise use last scroll position (from service)
+                            wrapper1dom.scrollLeft = scrollStorage.get($scope.id) || 0;
+                            wrapper2dom.scrollLeft = scrollStorage.get($scope.id) || 0;
+                            firstTime = false;
+                        }
+
+                    });
+                });
+
+                // save the scroll position for future (if id was specified)
+                $scope.$on('$destroy', function() {
+                    if ($scope.id !== undefined)
+                        scrollStorage.set($scope.id, wrapper1dom.scrollLeft);
+                });
+
+            }
+        };
+    }
+])
+
+// keeps the last scroll position for a directive specified by its id (in case the directive has been recompiled)
+.service('scrollStorage', function() {
+    var storage = {};
+
+    return {
+        get: function(id) {
+            return storage[id];
+        },
+        set: function(id, value) {
+            storage[id] = value;
+        }
+    };
+});
 
 })(angular);
