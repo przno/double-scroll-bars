@@ -9,7 +9,7 @@ Allows you to create double scroll bars (rulers), at top &amp; bottom or left &a
 Inspired by jQuery [solution](http://stackoverflow.com/a/3935190/1464298), this solution is pure AngularJS / JavaScript and does not require any other dependencies.
 
 ## Usage
-Use directive as attribute (use `data-*` prefix for custom attributes to be HTML5 compatible):
+Use directive as attribute:
 ```html
 <div data-double-scroll-bar-horizontal> {{content}} or static content </div>
 ```
@@ -40,4 +40,4 @@ Optionally add unique `id` to keep the scroll position in between directive re-c
 
 ## ToDo
 - `double-scroll-bar-vertical` directive
-~~- calculate the width of scroll bar itself (can differ based on system / browser), for now using fixed `20px` which just works fine in most cases~~
+- ~~calculate the width of scroll bar itself (can differ based on system / browser), for now using fixed `20px` which just works fine in most cases~~
