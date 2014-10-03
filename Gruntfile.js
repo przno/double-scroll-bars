@@ -7,7 +7,7 @@ module.exports = function(grunt) {
 				compress: {
 					warnings: true
 				},
-				banner: '/* AngularJS directives for double horizontal (top & bottom) or double vertical (left & rigth) scroll bars by @przno (Martin Praznovsky), v0.1.1, MIT License */'
+				banner: '/* AngularJS directives for double horizontal (top & bottom) or double vertical (left & rigth) scroll bars by @przno (Martin Praznovsky), v0.1.2, MIT License */'
 			},
 			my_target: {
 				files: {
