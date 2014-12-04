@@ -1,7 +1,7 @@
 {
     "name": "double-scroll-bars",
-    "version": "0.1.0",
-    "description": "AngularJS directives for double horizontal (top & bottom) or double vertical (left & rigth) scroll bars",
+    "version": "0.1.2.1",
+    "description": "AngularJS directives for double scroll bars",
     "author": "przno",
     "homepage": "https://github.com/przno/double-scroll-bars",
     "license": "MIT",

@@ -4,7 +4,7 @@ double-scroll-bars
 AngularJS directives for double horizontal (top &amp; bottom) ~~or double vertical (left &amp; rigth)~~ scroll bars
 
 ## Description
-Allows you to create double scroll bars (rulers), at top &amp; bottom or left &amp; right at the same time. It's accomplished by adding a *fake* scroll bar which has the same behavior as the original one. 
+Allows you to create double scroll bars (rulers), at top &amp; bottom ~~or left &amp; right~~ at the same time. It's accomplished by adding a *fake* scroll bar which has the same behavior as the original one. 
 
 Inspired by jQuery [solution](http://stackoverflow.com/a/3935190/1464298), this solution is pure AngularJS / JavaScript and does not require any other dependencies.
 
@@ -28,6 +28,9 @@ Optionally add unique `id` to keep the scroll position in between directive re-c
 [Demo on jsFiddle](http://jsfiddle.net/przno/q85Fs/3/)
 
 ## Change log
+**v0.1.2.1**
+- small change to Grunt build
+
 **v0.1.2**
 - calculating the size of scroll bar itself (instead of previous fixed `20px` value)
 

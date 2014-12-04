@@ -1,7 +1,7 @@
 /* 
- * AngularJS directives for double horizontal and double vertical scroll bar
+ * AngularJS directives for double scroll bars
  * Author: przno
- * Version: 0.1.2
+ * Homepage: https://github.com/przno/double-scroll-bars
  * License: MIT
  */
 
@@ -31,7 +31,6 @@
 				},
 
 				// HTML template
-				// 20px is the standard height of horizontal scroll bar on most systems, TODO calculate this value automatically, TODO do not consume height if bar not displayed
 				template: '' +
 					'<div>' +
 					' <div style="overflow-y: hidden;" data-ng-style="{\'overflow-x\': doubleScrollBarHorizontal == \'always\' ? \'scroll\' : \'auto\', height: nativeScrollBarHeight}">' +
@@ -123,15 +122,15 @@
 	// calculate scroll bar's width/height (in pixels) as it differs between various browsers and systems
 	// e.g. FF on Win7 17px, FF on Ubuntu 15px, FF on Xubuntu 13px
 	.service('scrollBarNativeThickness', function() {
-		var width;
 
 		function getWidth() {
 			// dang! DOM manipulation outside Angular's directives. But the element only lives for a glympse of time, I remove it immediatelly...
 			var inner = document.createElement('div');
+			var outer = document.createElement('div');
+
 			inner.style.width = '100%';
 			inner.style.height = '200px';
 
-			var outer = document.createElement('div');
 			outer.style.width = '200px';
 			outer.style.height = '150px';
 			outer.style.position = 'absolute';
@@ -148,6 +147,8 @@
 			document.body.removeChild(outer);
 			return (width1 - width2);
 		}
+
+		var width;
 
 		return {
 			get: function() {
