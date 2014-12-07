@@ -34,10 +34,10 @@
 				template: '' +
 					'<div>' +
 					' <div style="overflow-y: hidden;" data-ng-style="{\'overflow-x\': doubleScrollBarHorizontal == \'always\' ? \'scroll\' : \'auto\', height: nativeScrollBarHeight}">' +
-					'   <div data-ng-style="{width: wrapper2scrollWidth, height: nativeScrollBarHeight}"></div>' +
+					'  <div data-ng-style="{width: wrapper2scrollWidth, height: nativeScrollBarHeight}"></div>' +
 					' </div>' +
 					' <div data-ng-style="{\'overflow-x\': doubleScrollBarHorizontal == \'always\' ? \'scroll\' : \'auto\'}">' +
-					'   <div data-ng-transclude></div>' +
+					'  <div data-ng-transclude></div>' +
 					' </div>' +
 					'</div>',
 
@@ -51,11 +51,11 @@
 					// angular.element representation od the root <div> of this directive
 					var rootDiv = iElm.children().eq(0);
 
-					// angular.element object for the first div in the root // <div style="overflow-x: auto; overflow-y: hidden; height: 20px;">
+					// angular.element object for the first div in the root // <div style="overflow-y: hidden;" data-ng-style="{\'overflow-x\': doubleScrollBarHorizontal == \'always\' ? \'scroll\' : \'auto\', height: nativeScrollBarHeight}">
 					// the 'virtual' top scroll bar will be here
 					var wrapper1 = rootDiv.children().eq(0);
 
-					// angular.element object for the first div in the root // <div style="overflow-x: auto;">
+					// angular.element object for the second div in the root // <div data-ng-style="{\'overflow-x\': doubleScrollBarHorizontal == \'always\' ? \'scroll\' : \'auto\'}">
 					// the 'real' bottom scroll bar will be here
 					var wrapper2 = rootDiv.children().eq(1);
 
@@ -98,6 +98,104 @@
 					$scope.$on('$destroy', function() {
 						if ($scope.id !== undefined)
 							scrollStorage.set($scope.id, wrapper1dom.scrollLeft);
+					});
+
+				}
+			};
+		}
+	])
+
+	.directive('doubleScrollBarVertical', ['$timeout', 'scrollStorage', 'scrollBarNativeThickness', '$log',
+		function($timeout, scrollStorage, scrollBarNativeThickness, $log) {
+
+			return {
+				restrict: 'A',
+				transclude: true,
+				scope: {
+					doubleScrollBarVertical: '@',
+					id: '@'
+				},
+
+				template: '' +
+					'<div >' +
+					' <div style="overflow-x: hidden; float: left" data-ng-style="{\'overflow-y\': doubleScrollBarVertical == \'always\' ? \'scroll\' : \'auto\', width: nativeScrollBarWidth, height: origHeight}">' +
+					'  <div data-ng-style="{height: wrapper2scrollHeight, width: nativeScrollBarWidth}"></div>' +
+					' </div>' +
+					' <div data-ng-style="{\'overflow-y\': doubleScrollBarVertical == \'always\' ? \'scroll\' : \'auto\', height: origHeight}" data-ng-transclude></div>' +
+					'</div>',
+				link: function($scope, iElm, iAttrs, controller) {
+
+					// $log.log('directive');
+
+					$scope.nativeScrollBarWidth = scrollBarNativeThickness.get() + 'px';
+					$scope.wrapper2scrollHeight = '0px';
+
+					// $log.log('$scope.nativeScrollBarWidth', $scope.nativeScrollBarWidth);
+					// $log.log('$scope.wrapper2scrollHeight', $scope.wrapper2scrollHeight);
+
+
+
+					var rootDiv = iElm.children().eq(0);
+					var wrapper1 = rootDiv.children().eq(0);
+					var wrapper2 = rootDiv.children().eq(1);
+					var wrapper1dom = wrapper1[0];
+					var wrapper2dom = wrapper2[0];
+
+					// $log.log('rootDiv', rootDiv);
+					// $log.log('wrapper1', wrapper1);
+					// $log.log('wrapper2', wrapper2);
+					// $log.log('wrapper1dom', wrapper1dom);
+					$log.log('wrapper2dom', wrapper2dom);
+
+					// $scope.origHeight = iElm[0].style.height;
+					// $log.log('$scope.origHeight', $scope.origHeight);
+
+					$scope.$watch(function() {
+						return iElm[0].style.height;
+					}, function(newValue, oldValue) {
+						$scope.origHeight = newValue;
+						$log.log('watch $scope.origHeight', $scope.origHeight);
+					});
+
+					// $scope.$watch(function() {
+					// 	return wrapper2dom.scrollHeight;
+					// }, function(newValue, oldValue) {
+					// 	$scope.wrapper2ScrollHeight = newValue;
+					// 	$log.log('watch $scope.wrapper2ScrollHeight', $scope.wrapper2ScrollHeight);
+					// });
+
+					wrapper1.on('scroll', function() {
+						$log.log('on scroll wrapper1');
+						wrapper2dom.scrollTop = wrapper1dom.scrollTop;
+					});
+
+					wrapper2.on('scroll', function() {
+						$log.log('on scroll wrapper2');
+						wrapper1dom.scrollTop = wrapper2dom.scrollTop;
+					});
+
+					var firstTime = true;
+
+					// this does not work properly
+					$scope.$watch(function() {
+						$log.log('wrapper2dom', wrapper2dom);
+						$log.log('watch wrapper2dom.scrollHeight', wrapper2dom.scrollHeight);
+						return ($scope.wrapper2scrollHeight = wrapper2dom.scrollHeight + 'px');
+					}, function(newValue, oldValue) {
+						$log.log('newValue', newValue);
+						$timeout(function() {
+							$scope.$apply();
+							if (firstTime) {
+								wrapper1dom.scrollTop = scrollStorage.get($scope.id) || 0;
+								wrapper2dom.scrollTop = scrollStorage.get($scope.id) || 0;
+								firstTime = false;
+							}
+
+						});
+					});
+					$scope.$on('$destroy', function() {
+						if ($scope.id !== undefined)
+							scrollStorage.set($scope.id, wrapper1dom.scrollTop);
 					});
 
 				}
