@@ -33,8 +33,10 @@
 				// HTML template
 				template: '' +
 					'<div>' +
-					' <div style="overflow-y: hidden;" data-ng-style="{\'overflow-x\': doubleScrollBarHorizontal == \'always\' ? \'scroll\' : \'auto\', height: nativeScrollBarHeight}">' +
-					'  <div data-ng-style="{width: wrapper2scrollWidth, height: nativeScrollBarHeight}"></div>' +
+					' <div style="overflow-y: hidden;" data-ng-style="{height: nativeScrollBarHeight}">' +
+					'   <div style="overflow-y: hidden; position: relative; top: -1px;" data-ng-style="{\'overflow-x\': doubleScrollBarHorizontal == \'always\' ? \'scroll\' : \'auto\', height: scrollBarElementHeight}">' +
+					'    <div data-ng-style="{width: wrapper2scrollWidth, height: scrollBarElementHeight}"></div>' +
+					'   </div>' +
 					' </div>' +
 					' <div data-ng-style="{\'overflow-x\': doubleScrollBarHorizontal == \'always\' ? \'scroll\' : \'auto\'}">' +
 					'  <div data-ng-transclude></div>' +
@@ -43,7 +45,8 @@
 
 				// link function with the logic
 				link: function($scope, iElm, iAttrs, controller) {
-					$scope.nativeScrollBarHeight = scrollBarNativeThickness.get() + 'px';
+					$scope.nativeScrollBarHeight  = scrollBarNativeThickness.get() + 'px';
+					$scope.scrollBarElementHeight = parseInt(scrollBarNativeThickness.get() + 1) + 'px';
 
 					// scroll width of the wrapper2 div, width of div inside wrapper1 will be set to the same value
 					$scope.wrapper2scrollWidth = '0px';
@@ -53,7 +56,7 @@
 
 					// angular.element object for the first div in the root // <div style="overflow-y: hidden;" data-ng-style="{\'overflow-x\': doubleScrollBarHorizontal == \'always\' ? \'scroll\' : \'auto\', height: nativeScrollBarHeight}">
 					// the 'virtual' top scroll bar will be here
-					var wrapper1 = rootDiv.children().eq(0);
+					var wrapper1 = rootDiv.children().eq(0).children().eq(0);
 
 					// angular.element object for the second div in the root // <div data-ng-style="{\'overflow-x\': doubleScrollBarHorizontal == \'always\' ? \'scroll\' : \'auto\'}">
 					// the 'real' bottom scroll bar will be here
@@ -118,8 +121,10 @@
 
 				template: '' +
 					'<div >' +
-					' <div style="overflow-x: hidden; float: left" data-ng-style="{\'overflow-y\': doubleScrollBarVertical == \'always\' ? \'scroll\' : \'auto\', width: nativeScrollBarWidth, height: origHeight}">' +
-					'  <div data-ng-style="{height: wrapper2scrollHeight, width: nativeScrollBarWidth}"></div>' +
+					' <div style="overflow-x: hidden; float: left;" data-ng-style="{width: nativeScrollBarWidth}">' +
+					'   <div style="overflow-x: hidden; position: relative; left: -1px;" data-ng-style="{\'overflow-y\': doubleScrollBarVertical == \'always\' ? \'scroll\' : \'auto\', width: scrollBarElementWidth, height: origHeight}">' +
+					'    <div data-ng-style="{height: wrapper2scrollHeight, width: scrollBarElementWidth}"></div>' +
+					'   </div>' +
 					' </div>' +
 					' <div data-ng-style="{\'overflow-y\': doubleScrollBarVertical == \'always\' ? \'scroll\' : \'auto\', height: origHeight}" data-ng-transclude></div>' +
 					'</div>',
@@ -127,8 +132,9 @@
 
 					// $log.log('directive');
 
-					$scope.nativeScrollBarWidth = scrollBarNativeThickness.get() + 'px';
-					$scope.wrapper2scrollHeight = '0px';
+					$scope.nativeScrollBarWidth  = scrollBarNativeThickness.get() + 'px';
+					$scope.scrollBarElementWidth = parseInt(scrollBarNativeThickness.get() + 1) + 'px';
+					$scope.wrapper2scrollHeight  = '0px';
 
 					// $log.log('$scope.nativeScrollBarWidth', $scope.nativeScrollBarWidth);
 					// $log.log('$scope.wrapper2scrollHeight', $scope.wrapper2scrollHeight);
@@ -136,7 +142,7 @@
 
 
 					var rootDiv = iElm.children().eq(0);
-					var wrapper1 = rootDiv.children().eq(0);
+					var wrapper1 = rootDiv.children().eq(0).children().eq(0);
 					var wrapper2 = rootDiv.children().eq(1);
 					var wrapper1dom = wrapper1[0];
 					var wrapper2dom = wrapper2[0];
