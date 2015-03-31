@@ -1,10 +1,10 @@
 double-scroll-bars
 ==================
 
-AngularJS directives for double horizontal (top &amp; bottom) or double vertical (left &amp; rigth) scroll bars.
+AngularJS directives for double horizontal (top &amp; bottom) ~~or double vertical (left &amp; rigth)~~ scroll bars.
 
 ## Description
-Allows you to create double scroll bars (rulers), at top &amp; bottom / left &amp; right at the same time. It's accomplished by adding a *fake* scroll bar which has the same behavior as the original one. 
+Allows you to create double scroll bars (rulers), at top &amp; bottom ~~/ left &amp; right~~ at the same time. It's accomplished by adding a *fake* scroll bar which has the same behavior as the original one. 
 
 Inspired by jQuery [solution](http://stackoverflow.com/a/3935190/1464298), this solution is pure AngularJS / JavaScript and does not require any other dependencies.
 
@@ -17,14 +17,14 @@ Load script and inject module dependency:
 var myApp = angular.module('myApp', ['doubleScrollBars']);
 ```
 
-Two attribute-style directives are available: `double-scroll-bar-horizontal` and `double-scroll-bar-vertical`.
+Attribute-style directives are available: `double-scroll-bar-horizontal` ~~and `double-scroll-bar-vertical`~~.
 
 Use directive as attribute:
 ```html
 <div data-double-scroll-bar-horizontal> {{content}} or static content </div>
 ```
 
-Optionally add value `always` (equivalent to CSS `overflow: scroll`)
+Optionally add value `always` (equivalent to CSS `overflow: scroll`) to display scroll bars even when they are not needed
 ```html
 <div data-double-scroll-bar-horizontal="always"> {{content}} or static content </div>
 ```
@@ -34,10 +34,17 @@ Optionally add unique `id` to keep the scroll position in between directive re-c
 <div data-double-scroll-bar-horizontal id="id1"> {{content}} or static content </div>
 ```
 
+If you are interested in the standard size (number of pixels) of a scroll bar in your browser, use service `$dsb` and its only method `getSize()`. This value differs between various browsers and operating systems.
+
 ## Demo
-[Demo on jsFiddle](http://jsfiddle.net/przno/q85Fs/3/)
+[Demo on jsFiddle](http://jsfiddle.net/przno/q85Fs/4/)
 
 ## Change log
+**v0.1.4**
+- merging #1 by @benib
+- removing `double-scroll-bar-vertical` directive as that was not functional
+- renaming services
+
 **v0.1.3-alpha**
 - added `double-scroll-bar-vertical` directive but needs a fix
 
@@ -55,8 +62,8 @@ Optionally add unique `id` to keep the scroll position in between directive re-c
  - initial version
 
 ## ToDo
-- fix `double-scroll-bar-vertical` to respond to scroll height change
-- unify names
-- update demo, readme
-- ~~`double-scroll-bar-vertical` directive~~
+- fix IE9 (in demo example with transcluded content)
+- ~~unify names~~
+- ~~update demo, readme~~
+- `double-scroll-bar-vertical` directive
 - ~~calculate the width of scroll bar itself (can differ based on system / browser), for now using fixed `20px` which just works fine in most cases~~

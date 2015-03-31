@@ -10,8 +10,8 @@
 
 	angular.module('doubleScrollBars', [])
 
-	.directive('doubleScrollBarHorizontal', ['$timeout', 'scrollStorage', 'scrollBarNativeThickness',
-		function($timeout, scrollStorage, scrollBarNativeThickness) {
+	.directive('doubleScrollBarHorizontal', ['$timeout', '$dsb', '$$dsbStorage',
+		function($timeout, $dsb, $$dsbStorage) {
 
 			return {
 
@@ -33,20 +33,20 @@
 				// HTML template
 				template: '' +
 					'<div>' +
-					' <div style="overflow-y: hidden;" data-ng-style="{height: nativeScrollBarHeight}">' +
-					'   <div style="overflow-y: hidden; position: relative; top: -1px;" data-ng-style="{\'overflow-x\': doubleScrollBarHorizontal == \'always\' ? \'scroll\' : \'auto\', height: scrollBarElementHeight}">' +
-					'    <div data-ng-style="{width: wrapper2scrollWidth, height: scrollBarElementHeight}"></div>' +
-					'   </div>' +
+					' <div style="overflow-y:hidden;" data-ng-style="{height:nativeScrollBarHeight}">' +
+					'  <div style="overflow-y:hidden;position:relative;top:-1px;" data-ng-style="{\'overflow-x\':doubleScrollBarHorizontal==\'always\'?\'scroll\':\'auto\',height:scrollBarElementHeight}">' +
+					'   <div data-ng-style="{width:wrapper2scrollWidth,height:scrollBarElementHeight}"/>' +
+					'  </div>' +
 					' </div>' +
-					' <div data-ng-style="{\'overflow-x\': doubleScrollBarHorizontal == \'always\' ? \'scroll\' : \'auto\'}">' +
-					'  <div data-ng-transclude></div>' +
+					' <div data-ng-style="{\'overflow-x\':doubleScrollBarHorizontal==\'always\'?\'scroll\':\'auto\'}">' +
+					'  <div data-ng-transclude/>' +
 					' </div>' +
 					'</div>',
 
 				// link function with the logic
 				link: function($scope, iElm, iAttrs, controller) {
-					$scope.nativeScrollBarHeight  = scrollBarNativeThickness.get() + 'px';
-					$scope.scrollBarElementHeight = parseInt(scrollBarNativeThickness.get() + 1) + 'px';
+					$scope.nativeScrollBarHeight = $dsb.getSize() + 'px';
+					$scope.scrollBarElementHeight = parseInt($dsb.getSize() + 1) + 'px';
 
 					// scroll width of the wrapper2 div, width of div inside wrapper1 will be set to the same value
 					$scope.wrapper2scrollWidth = '0px';
@@ -89,8 +89,8 @@
 							// first time after recompiled and width set (width set in $apply())
 							if (firstTime) {
 								// initial values for scroll position - zero if this directive is compiled very first time or if no id provided, otherwise use last scroll position (from service)
-								wrapper1dom.scrollLeft = scrollStorage.get($scope.id) || 0;
-								wrapper2dom.scrollLeft = scrollStorage.get($scope.id) || 0;
+								wrapper1dom.scrollLeft = $$dsbStorage.get($scope.id) || 0;
+								wrapper2dom.scrollLeft = $$dsbStorage.get($scope.id) || 0;
 								firstTime = false;
 							}
 
@@ -100,108 +100,7 @@
 					// save the scroll position for future (if id was specified)
 					$scope.$on('$destroy', function() {
 						if ($scope.id !== undefined)
-							scrollStorage.set($scope.id, wrapper1dom.scrollLeft);
-					});
-
-				}
-			};
-		}
-	])
-
-	.directive('doubleScrollBarVertical', ['$timeout', 'scrollStorage', 'scrollBarNativeThickness', '$log',
-		function($timeout, scrollStorage, scrollBarNativeThickness, $log) {
-
-			return {
-				restrict: 'A',
-				transclude: true,
-				scope: {
-					doubleScrollBarVertical: '@',
-					id: '@'
-				},
-
-				template: '' +
-					'<div >' +
-					' <div style="overflow-x: hidden; float: left;" data-ng-style="{width: nativeScrollBarWidth}">' +
-					'   <div style="overflow-x: hidden; position: relative; left: -1px;" data-ng-style="{\'overflow-y\': doubleScrollBarVertical == \'always\' ? \'scroll\' : \'auto\', width: scrollBarElementWidth, height: origHeight}">' +
-					'    <div data-ng-style="{height: wrapper2scrollHeight, width: scrollBarElementWidth}"></div>' +
-					'   </div>' +
-					' </div>' +
-					' <div data-ng-style="{\'overflow-y\': doubleScrollBarVertical == \'always\' ? \'scroll\' : \'auto\', height: origHeight}" data-ng-transclude></div>' +
-					'</div>',
-				link: function($scope, iElm, iAttrs, controller) {
-
-					// $log.log('directive');
-
-					$scope.nativeScrollBarWidth  = scrollBarNativeThickness.get() + 'px';
-					$scope.scrollBarElementWidth = parseInt(scrollBarNativeThickness.get() + 1) + 'px';
-					$scope.wrapper2scrollHeight  = '0px';
-
-					// $log.log('$scope.nativeScrollBarWidth', $scope.nativeScrollBarWidth);
-					// $log.log('$scope.wrapper2scrollHeight', $scope.wrapper2scrollHeight);
-
-
-
-					var rootDiv = iElm.children().eq(0);
-					var wrapper1 = rootDiv.children().eq(0).children().eq(0);
-					var wrapper2 = rootDiv.children().eq(1);
-					var wrapper1dom = wrapper1[0];
-					var wrapper2dom = wrapper2[0];
-
-					// $log.log('rootDiv', rootDiv);
-					// $log.log('wrapper1', wrapper1);
-					// $log.log('wrapper2', wrapper2);
-					// $log.log('wrapper1dom', wrapper1dom);
-					$log.log('wrapper2dom', wrapper2dom);
-
-					// $scope.origHeight = iElm[0].style.height;
-					// $log.log('$scope.origHeight', $scope.origHeight);
-
-					$scope.$watch(function() {
-						return iElm[0].style.height;
-					}, function(newValue, oldValue) {
-						$scope.origHeight = newValue;
-						$log.log('watch $scope.origHeight', $scope.origHeight);
-					});
-
-					// $scope.$watch(function() {
-					// 	return wrapper2dom.scrollHeight;
-					// }, function(newValue, oldValue) {
-					// 	$scope.wrapper2ScrollHeight = newValue;
-					// 	$log.log('watch $scope.wrapper2ScrollHeight', $scope.wrapper2ScrollHeight);
-					// });
-
-					wrapper1.on('scroll', function() {
-						$log.log('on scroll wrapper1');
-						wrapper2dom.scrollTop = wrapper1dom.scrollTop;
-					});
-
-					wrapper2.on('scroll', function() {
-						$log.log('on scroll wrapper2');
-						wrapper1dom.scrollTop = wrapper2dom.scrollTop;
-					});
-
-					var firstTime = true;
-
-					// this does not work properly
-					$scope.$watch(function() {
-						$log.log('wrapper2dom', wrapper2dom);
-						$log.log('watch wrapper2dom.scrollHeight', wrapper2dom.scrollHeight);
-						return ($scope.wrapper2scrollHeight = wrapper2dom.scrollHeight + 'px');
-					}, function(newValue, oldValue) {
-						$log.log('newValue', newValue);
-						$timeout(function() {
-							$scope.$apply();
-							if (firstTime) {
-								wrapper1dom.scrollTop = scrollStorage.get($scope.id) || 0;
-								wrapper2dom.scrollTop = scrollStorage.get($scope.id) || 0;
-								firstTime = false;
-							}
-
-						});
-					});
-					$scope.$on('$destroy', function() {
-						if ($scope.id !== undefined)
-							scrollStorage.set($scope.id, wrapper1dom.scrollTop);
+							$$dsbStorage.set($scope.id, wrapper1dom.scrollLeft);
 					});
 
 				}
@@ -210,7 +109,7 @@
 	])
 
 	// keeps the last scroll position for a directive specified by its id (in case the directive has been recompiled)
-	.service('scrollStorage', function() {
+	.service('$$dsbStorage', function() {
 		var storage = {};
 
 		return {
@@ -225,7 +124,7 @@
 
 	// calculate scroll bar's width/height (in pixels) as it differs between various browsers and systems
 	// e.g. FF on Win7 17px, FF on Ubuntu 15px, FF on Xubuntu 13px
-	.service('scrollBarNativeThickness', function() {
+	.service('$dsb', function() {
 
 		function getWidth() {
 			// dang! DOM manipulation outside Angular's directives. But the element only lives for a glympse of time, I remove it immediatelly...
@@ -255,7 +154,7 @@
 		var width;
 
 		return {
-			get: function() {
+			getSize: function() {
 				width = width || getWidth();
 				return width;
 			}
