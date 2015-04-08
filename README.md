@@ -37,7 +37,7 @@ Optionally add unique `id` to keep the scroll position in between directive re-c
 If you are interested in the standard size (number of pixels) of a scroll bar in your browser, use service `$dsb` and its only method `getSize()`. This value differs between various browsers and operating systems.
 
 ## Demo
-[Demo on jsFiddle](http://jsfiddle.net/przno/q85Fs/4/)
+[Demo on jsFiddle](http://jsfiddle.net/q85Fs/4/)
 
 ## Change log
 **v0.1.4**
