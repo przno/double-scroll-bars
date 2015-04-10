@@ -35,11 +35,11 @@
 					'<div>' +
 					' <div style="overflow-y:hidden;" data-ng-style="{height:nativeScrollBarHeight}">' +
 					'  <div style="overflow-y:hidden;position:relative;top:-1px;" data-ng-style="{\'overflow-x\':doubleScrollBarHorizontal==\'always\'?\'scroll\':\'auto\',height:scrollBarElementHeight}">' +
-					'   <div data-ng-style="{width:wrapper2scrollWidth,height:scrollBarElementHeight}"/>' +
+					'   <div data-ng-style="{width:wrapper2scrollWidth,height:scrollBarElementHeight}"></div>' +
 					'  </div>' +
 					' </div>' +
 					' <div data-ng-style="{\'overflow-x\':doubleScrollBarHorizontal==\'always\'?\'scroll\':\'auto\'}">' +
-					'  <div data-ng-transclude/>' +
+					'  <div data-ng-transclude></div>' +
 					' </div>' +
 					'</div>',
 
