@@ -43,6 +43,7 @@ If you are interested in the standard size (number of pixels) of a scroll bar in
 **v0.1.5**
 - fix for bug in directive template introduced with 0.1.4
 - releases are now tagged
+
 **v0.1.4**
 - merging #1 by @benib
 - removing `double-scroll-bar-vertical` directive as that was not functional
