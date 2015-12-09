@@ -1,4 +1,4 @@
-/* 
+/*
  * AngularJS directives for double scroll bars
  * Author: przno
  * Homepage: https://github.com/przno/double-scroll-bars
@@ -45,8 +45,9 @@
 
 				// link function with the logic
 				link: function($scope, iElm, iAttrs, controller) {
-					$scope.nativeScrollBarHeight = $dsb.getSize() + 'px';
-					$scope.scrollBarElementHeight = parseInt($dsb.getSize() + 1) + 'px';
+					var barSize = $dsb.getSize();
+					$scope.nativeScrollBarHeight = barSize + 'px';
+					$scope.scrollBarElementHeight = parseInt(barSize + 1) + 'px';
 
 					// scroll width of the wrapper2 div, width of div inside wrapper1 will be set to the same value
 					$scope.wrapper2scrollWidth = '0px';
